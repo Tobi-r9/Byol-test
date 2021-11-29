@@ -168,14 +168,3 @@ def main(epochs=30):
     np.savetxt('losses.txt', tf.stack(losses).numpy())
 
     return F_eigenval, allignment, wp_eigenval
-
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument('--encoder', type=str, required=True, choices=['resnet18', 'resnet34'], help='Encoder architecture')
-    parser.add_argument('--num_epochs', type=int, default=300, help='Number of epochs')
-    parser.add_argument('--batch_size', type=int, default=512, help='Batch size for pretraining')
-    
-    args = parser.parse_args()
-    F, allignment, wp = main(args)
