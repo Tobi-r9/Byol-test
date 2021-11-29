@@ -20,7 +20,7 @@ def update_f(F, corr, lambda_=0.8):
         F = lambda_ * F + (1 - lambda_) * corr
 
 
-def main():
+def main(epochs=30):
 
     # eigenspace allignment
     F = None
@@ -117,7 +117,7 @@ def main():
     save_every = 100  # epochs
 
     losses = []
-    for epoch_id in range(100):
+    for epoch_id in range(epochs):
         data.shuffle_training_data()
         
         for batch_id in range(batches_per_epoch):
@@ -141,7 +141,7 @@ def main():
             g_target.set_weights(g_target_weights)
 
             if (batch_id + 1) % log_every == 0:
-                print('[Epoch {}/{} Batch {}/{}] Loss={:.5f}.'.format(epoch_id+1, 100, batch_id+1, batches_per_epoch, loss))
+                print('[Epoch {}/{} Batch {}/{}] Loss={:.5f}.'.format(epoch_id+1, epochs, batch_id+1, batches_per_epoch, loss))
 
         if (epoch_id + 1) % save_every == 0:
             f_online.save_weights('f_online_{}.h5'.format(epoch_id + 1))
