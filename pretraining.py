@@ -20,7 +20,7 @@ def update_f(F, corr, lambda_=0.8):
         F = lambda_ * F + (1 - lambda_) * corr
 
 
-def main(args):
+def main():
 
     # eigenspace allignment
     F = None
@@ -36,11 +36,11 @@ def main(args):
     data = CIFAR10()
 
     # Instantiate networks
-    f_online = encoders[args.encoder]()
+    f_online = encoders['resnet18']()
     g_online = ProjectionHead()
     q_online = ProjectionHead()
 
-    f_target = encoders[args.encoder]()
+    f_target = encoders['resnet18']()
     g_target = ProjectionHead()
 
 
@@ -65,7 +65,7 @@ def main(args):
 
 
     # Define optimizer
-    lr = 1e-3 * args.batch_size / 512
+    lr = 1e-3 * 512 / 512
     opt = tf.keras.optimizers.Adam(learning_rate=lr)
     print('Using Adam optimizer with learning rate {}.'.format(lr))
 
@@ -112,16 +112,16 @@ def main(args):
         return loss
 
 
-    batches_per_epoch = data.num_train_images // args.batch_size
+    batches_per_epoch = data.num_train_images // 512
     log_every = 10  # batches
     save_every = 100  # epochs
 
     losses = []
-    for epoch_id in range(args.num_epochs):
+    for epoch_id in range(100):
         data.shuffle_training_data()
         
         for batch_id in range(batches_per_epoch):
-            x1, x2 = data.get_batch_pretraining(batch_id, args.batch_size)
+            x1, x2 = data.get_batch_pretraining(batch_id, 512)
             loss = train_step_pretraining(x1, x2)
             losses.append(float(loss))
 
@@ -141,7 +141,7 @@ def main(args):
             g_target.set_weights(g_target_weights)
 
             if (batch_id + 1) % log_every == 0:
-                print('[Epoch {}/{} Batch {}/{}] Loss={:.5f}.'.format(epoch_id+1, args.num_epochs, batch_id+1, batches_per_epoch, loss))
+                print('[Epoch {}/{} Batch {}/{}] Loss={:.5f}.'.format(epoch_id+1, 100, batch_id+1, batches_per_epoch, loss))
 
         if (epoch_id + 1) % save_every == 0:
             f_online.save_weights('f_online_{}.h5'.format(epoch_id + 1))
@@ -178,4 +178,4 @@ if __name__ == '__main__':
     parser.add_argument('--batch_size', type=int, default=512, help='Batch size for pretraining')
     
     args = parser.parse_args()
-    main(args)
+    F, allignment, wp = main(args)
