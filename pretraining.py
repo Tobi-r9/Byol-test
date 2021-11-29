@@ -18,7 +18,7 @@ def update_f(F, corr, lambda_=0.8):
         F = corr
     else:
         F = lambda_ * F + (1 - lambda_) * corr
-
+    return F
 
 def main(epochs=30):
 
@@ -106,7 +106,7 @@ def main(epochs=30):
         corr_2 = tf.matmul(tf.expand_dims(z_online_2, 2), tf.expand_dims(z_online_2, 1))
         corr = tf.concat([corr_1, corr_2], axis=0)
         corr = tf.reduce_mean(corr, axis=0)
-        update_f(F, corr)
+        F = update_f(F, corr)
         
 
         return loss
