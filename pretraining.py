@@ -71,7 +71,7 @@ def main(epochs=30):
 
 
     @tf.function
-    def train_step_pretraining(x1, x2):  # (bs, 32, 32, 3), (bs, 32, 32, 3)
+    def train_step_pretraining(x1, x2, F):  # (bs, 32, 32, 3), (bs, 32, 32, 3)
 
         # Forward pass
         h_target_1 = f_target(x1, training=True)
@@ -122,7 +122,7 @@ def main(epochs=30):
         
         for batch_id in range(batches_per_epoch):
             x1, x2 = data.get_batch_pretraining(batch_id, 512)
-            loss = train_step_pretraining(x1, x2)
+            loss = train_step_pretraining(x1, x2, F)
             losses.append(float(loss))
 
             # Update target networks (exponential moving average of online networks)
