@@ -6,8 +6,12 @@ from augmentation import augment_image_pretraining, augment_image_finetuning
 
 class CIFAR10:
 
-    def __init__(self):
+    def __init__(self, num_samples=None):
         (self.x_train, self.y_train), (self.x_test, self.y_test) = tf.keras.datasets.cifar10.load_data()
+        if num_samples:
+            print(f'Use only {num_samples} samples')
+            self.x_train = self.x_train[:num_samples]
+            self.y_train = self.y_train[:num_samples]
         self.num_train_images, self.num_test_images = self.y_train.shape[0], self.y_test.shape[0]
         self.class_names = ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'sheep', 'truck']
 

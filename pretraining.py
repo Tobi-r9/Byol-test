@@ -20,7 +20,7 @@ def update_f(F, corr, lambda_=0.8):
         F = lambda_ * F + (1 - lambda_) * corr
     return F
 
-def main(epochs=30):
+def main(epochs=30, num_samples=30000):
 
     # eigenspace allignment
     F = None
@@ -33,7 +33,7 @@ def main(epochs=30):
         )
 
     # Load CIFAR-10 dataset
-    data = CIFAR10()
+    data = CIFAR10(num_samples)
 
     # Instantiate networks
     f_online = encoders['resnet18']()
@@ -109,7 +109,7 @@ def main(epochs=30):
         F = update_f(F, corr)
         
 
-        return loss
+        return loss, F
 
 
     batches_per_epoch = data.num_train_images // 512
@@ -122,7 +122,7 @@ def main(epochs=30):
         
         for batch_id in range(batches_per_epoch):
             x1, x2 = data.get_batch_pretraining(batch_id, 512)
-            loss = train_step_pretraining(x1, x2, F)
+            loss, F = train_step_pretraining(x1, x2, F)
             losses.append(float(loss))
 
             # Update target networks (exponential moving average of online networks)
@@ -154,7 +154,7 @@ def main(epochs=30):
 
             # get predictor head
             w1 = q_online.fc1.get_weights()[0]
-            w2 = q_online.fc1.get_weights()[0]
+            w2 = q_online.fc2.get_weights()[0]
             wp = tf.matmul(w1,w2)
             wp = tf.transpose(wp)
             wp_eigval = tf.linalg.eigvals(wp)
